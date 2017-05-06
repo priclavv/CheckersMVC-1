@@ -33,6 +33,7 @@
         }
     }
 </table>
+<h2 id="turn-indicator"></h2>
 @Scripts.Render("~/bundles/jquery")
 <script>
     var vm = @Html.Raw(JsonConvert.SerializeObject(Model));
@@ -56,6 +57,11 @@
                     $('.' + i + '-' + j).append("<div class='circle' style='background-color :blue'></div>");
             }
             isPlayerTurn = vm.IsPlayerTurn;
+            if(isPlayerTurn)
+                $('#turn-indicator').text('Your turn');
+            else
+                $('#turn-indicator').text('Enemy\'s turn');
+
         }
     }
     function getNumber(string) {
