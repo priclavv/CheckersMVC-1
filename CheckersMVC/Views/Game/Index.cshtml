@@ -1,0 +1,134 @@
+﻿@using System.Web.Script.Serialization
+@using Newtonsoft.Json
+@model CheckersMVC.ViewModels.GameVM
+@{
+    ViewBag.Title = "Board game";
+    
+}
+
+<h2> Board game </h2>
+<table class="board">
+    @{
+        int fieldNum = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            <tr>
+                @{
+                    for (int j = 0; j < 8; j++)
+                    {
+                        if (fieldNum % 2 == 1)
+                        {
+                            <td class="board-field @($"{i}-{j}")" style="background-color: white"></td>
+                        }
+                        else
+                        {
+                            <td class="board-field @($"{i}-{j}") "></td>
+                        }
+
+                        fieldNum++;
+                    }
+                }
+            </tr>
+            fieldNum++;
+        }
+    }
+</table>
+@Scripts.Render("~/bundles/jquery")
+<script>
+    var vm = @Html.Raw(JsonConvert.SerializeObject(Model));
+    var pieceSelected = false;
+    var isPlayerTurn = vm.IsPlayerTurn;
+    var moveCoords = {};
+    function refresh(vm) {
+        $('.circle').remove();
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                if ($('.' + i + '-' + j).hasClass('field-border'))
+                    $('.' + i + '-' + j).removeClass('field-border');
+                if (!vm.Board[j][i].IsDefined) {
+                    continue;
+                }
+                if ($('.' + i + '-' + j).children.length > 0)
+                    $('.' + i + '-' + j).empty();
+                if (vm.Board[j][i].Color === 1)
+                    $('.' + i + '-' + j).append("<div class='circle'></div>");
+                if (vm.Board[j][i].Color === 2)
+                    $('.' + i + '-' + j).append("<div class='circle' style='background-color :blue'></div>");
+            }
+            isPlayerTurn = vm.IsPlayerTurn;
+        }
+    }
+    function getNumber(string) {
+        var matches = string.match(/[0-9]-[0-9]/);
+        return matches[0];
+    }
+
+    function updateBoard() {
+        if (!pieceSelected) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Refresh")",
+            }).success(function(data) {
+                var newVm = JSON.parse(data);
+                refresh(newVm);
+            });
+        }
+        if(isPlayerTurn)
+            setTimeout(updateBoard, 20000);
+        else
+            setTimeout(updateBoard, 2000);
+
+    }
+
+
+    $(document).ready(function() {
+        refresh(vm);
+        updateBoard();
+    });
+
+    $('.board-field').click(function() {
+        if (!isPlayerTurn)
+            return;
+        if (pieceSelected) {
+            
+            if (!$(this).children().length > 0) {
+                pieceSelected = false;
+                var classes = $(this).attr('class');
+                var name = getNumber(classes);
+                moveCoords.toX = parseInt(name[2]);
+                moveCoords.toY = parseInt(name[0]);
+                console.log(moveCoords);
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Move")",
+                    data: moveCoords,
+                    dataType: "json"
+                }).success(function(data) {
+                    var newVm = JSON.parse(data);
+                    refresh(newVm);
+                    updateBoard();
+                });
+            } else if ($(this).hasClass('field-border')) {
+                $(this).removeClass('field-border');
+                pieceSelected = false;
+            }
+            // AJAX
+            return;
+        }   
+        if (!$(this).children().length > 0) {
+            return;
+        }
+        if ($(this).hasClass('field-border')) {
+            pieceSelected = false;
+            $(this).removeClass('field-border');
+        } else {
+            pieceSelected = true;
+            $(this).addClass('field-border');
+            var classes = $(this).attr('class');
+            var name = getNumber(classes);
+            moveCoords.fromX = parseInt(name[2]);
+            moveCoords.fromY = parseInt(name[0]);
+            console.log(moveCoords);
+        }
+    });
+</script>
