@@ -10,37 +10,50 @@ using CheckersMVC.Factories;
 using CheckersMVC.Services;
 using CheckersMVC.ViewModels;
 using Newtonsoft.Json;
+using CheckersMVC.Helpers;
+using CheckersMVC.Models;
 
 namespace CheckersMVC.Controllers
 {
     public class GameController : Controller
     {
-        private readonly Game _currentGame = GameFactory.Instance.Game;
+        private readonly IGamesManager _gamesManager = GameManagerFactory.Instance.GamesManager;
         private static int index = 0;
         [Authorize]
-        public ActionResult Index()
+        public ActionResult Index(int id = 0)
         {
             var name = User.Identity.Name;
-            lock (_currentGame)
+            Game currentGame = _gamesManager.GetGameById(id);
+            if (currentGame == null)
+                currentGame = _gamesManager.CreateGame(id);
+            lock (currentGame)
             {
-                GameVM vm = GameVM.From(_currentGame);
+                GameVM vm = GameVM.From(currentGame);
                 index++;
-                if ( _currentGame.GetPlayerByName(name) == null && !_currentGame.SetPlayerName(name))
+                if ( currentGame.GetPlayerByName(name) == null && !currentGame.AddUserToGame(new Models.User() {Name = name }))
                     name = "";
-                if (_currentGame.CurrentPlayer != null)
-                    vm.IsPlayerTurn = _currentGame.CurrentPlayer.Name == name;
+                if (currentGame.CurrentPlayer != null)
+                {
+                    vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
+                }
+                _gamesManager.SaveChanges(currentGame);
                 return View(vm);
             }
         }
 
-        public ActionResult Refresh()
+        [HttpPost]
+        public ActionResult Refresh([Bind(Include = "GameID")]RefreshDTO dto)
         {
+            int id = dto.GameID;
+            Game currentGame = _gamesManager.GetGameById(id);
+            if (currentGame == null)
+                currentGame = _gamesManager.CreateGame(id);
             var name = User.Identity.Name;
-            lock (_currentGame)
+            lock (currentGame)
             {
-                GameVM vm = GameVM.From(_currentGame);
-                if (_currentGame.CurrentPlayer != null)
-                    vm.IsPlayerTurn = _currentGame.CurrentPlayer.Name == name;
+                GameVM vm = GameVM.From(currentGame);
+                if (currentGame.CurrentPlayer != null)
+                    vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
                 JsonResult result = new JsonResult { Data = JsonConvert.SerializeObject(vm) };
                 return result;
             }
@@ -49,19 +62,23 @@ namespace CheckersMVC.Controllers
         {
             GameVM vm = null;
             var name = User.Identity.Name;
-            lock (_currentGame)
+            Game currentGame = _gamesManager.GetGameById(moveCoords.GameID);
+            if (currentGame == null)
+                currentGame = _gamesManager.CreateGame(moveCoords.GameID);
+            lock (currentGame)
             {
-                Player enemyPlayer = _currentGame.CurrentPlayer == _currentGame.Player1
-                 ? _currentGame.Player2
-                 : _currentGame.Player1;
-                if (_currentGame.CurrentPlayer.Turn(_currentGame.Board, enemyPlayer,
-                    _currentGame.Board[moveCoords.fromX, moveCoords.fromY], new Position(moveCoords.toX, moveCoords.toY)))
+                Player enemyPlayer = currentGame.CurrentPlayer == currentGame.Player1
+                 ? currentGame.Player2
+                 : currentGame.Player1;
+                if (currentGame.CurrentPlayer.Turn(currentGame.Board, enemyPlayer,
+                    currentGame.Board[moveCoords.fromX, moveCoords.fromY], new Position(moveCoords.toX, moveCoords.toY)))
                 {
-                    _currentGame.CurrentPlayer = _currentGame.CurrentPlayer == _currentGame.Player1 ? _currentGame.Player2 : _currentGame.Player1;
+                    currentGame.CurrentPlayer = currentGame.CurrentPlayer == currentGame.Player1 ? currentGame.Player2 : currentGame.Player1;
                 }
-                vm = GameVM.From(_currentGame);
-                if (_currentGame.CurrentPlayer != null)
-                    vm.IsPlayerTurn = _currentGame.CurrentPlayer.Name == name;
+                vm = GameVM.From(currentGame);
+                if (currentGame.CurrentPlayer != null)
+                    vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
+                _gamesManager.SaveChanges(currentGame);
             }
             JsonResult result = new JsonResult { Data = JsonConvert.SerializeObject(vm) };
             return result;

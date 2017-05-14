@@ -7,6 +7,7 @@ namespace CheckersMVC.DTOs
 {
     public class MoveDTO
     {
+        public int GameID { get; set; }
         public int fromX { get; set; }
         public int fromY { get; set; }
         public int toX { get; set; }

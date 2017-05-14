@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Checkers;
+using CheckersMVC.Models;
 
 namespace CheckersMVC.Services
 {
     public static class PlayerNameService
     {
+        public static bool AddUserToGame(this Game g, User user)
+        {
+            bool isSuccess = g.SetPlayerName(user.Name);
+            g.TryStartGame();
+            return isSuccess;
+        }
         public static bool SetPlayerName(this Game g, string name)
         {
             if (g.Player1.Name == null)
@@ -18,6 +25,16 @@ namespace CheckersMVC.Services
             if (g.Player2.Name == null)
             {
                 g.Player2.Name = name;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool TryStartGame(this Game g)
+        {
+            if(g.Player1.Name != null && g.Player2.Name != null)
+            {
+                g.GameState = Game.State.GAME;
                 return true;
             }
             return false;

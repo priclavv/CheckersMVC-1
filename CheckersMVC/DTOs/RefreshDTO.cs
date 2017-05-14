@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace CheckersMVC.Models
+namespace CheckersMVC.DTOs
 {
-    public class User
+    public class RefreshDTO
     {
-        public string Name { get; set; }
+        public int GameID { get; set; }
     }
 }

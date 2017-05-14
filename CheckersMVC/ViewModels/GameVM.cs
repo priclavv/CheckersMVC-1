@@ -8,6 +8,7 @@ namespace CheckersMVC.ViewModels
 {
     public class GameVM
     {
+        public int GameID { get; set; }
         public PieceVM[,] Board { get; set; }
         public bool IsPlayerTurn { get; set; }
         public static GameVM From(Game g)
@@ -17,6 +18,7 @@ namespace CheckersMVC.ViewModels
             for (int i = 0; i < g.Board.board.GetLength(0); ++i)
                 for (int j = 0; j < g.Board.board.GetLength(1); ++j)
                     vm.Board[i, j] = PieceVM.From(g.Board.board[i, j]);
+            vm.GameID = g.GameID;
             return vm;
         }
     }

@@ -6,9 +6,10 @@ namespace Checkers
 
     public class Game
     {
-        protected enum State { GAME, GAMEOVER, NOGAME };
+        public int GameID { get; set; }
+        public enum State { GAME, GAMEOVER, NOGAME };
 
-        protected State gameState;
+        public State GameState ;
         public CheckerBoard Board { get; set; }
         public Player Player1 { get; set; }
         public Player Player2 { get; set; } 
@@ -50,6 +51,7 @@ namespace Checkers
             Player2 = new Player(col1 == Color.BLACK ? Color.WHITE : Color.BLACK, Board);
 
             CurrentPlayer = col1 == Color.WHITE ? Player1 : Player2;
+            GameState = State.NOGAME;
        
 
             // kolor dla gracza wylosowac
@@ -59,11 +61,11 @@ namespace Checkers
 
         public void Run()
         {
-            while (gameState == State.GAME)
+            while (GameState == State.GAME)
             {
                 if (IsGameOver())
                 {
-                    gameState = State.GAMEOVER;
+                    GameState = State.GAMEOVER;
                     break;
                 }
                 Player enemy = CurrentPlayer == Player1 ? Player2 : Player1;

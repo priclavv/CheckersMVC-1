@@ -70,10 +70,14 @@
     }
 
     function updateBoard() {
+        var gameID = {};
+        gameID.GameID = vm.GameID;
         if (!pieceSelected) {
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("Refresh")",
+                data: gameID,
+                dataType: "json"
             }).success(function(data) {
                 var newVm = JSON.parse(data);
                 refresh(newVm);
@@ -103,6 +107,7 @@
                 var name = getNumber(classes);
                 moveCoords.toX = parseInt(name[2]);
                 moveCoords.toY = parseInt(name[0]);
+                moveCoords.GameID = vm.GameID;
                 console.log(moveCoords);
                 $.ajax({
                     type: "POST",
