@@ -39,7 +39,9 @@
     var vm = @Html.Raw(JsonConvert.SerializeObject(Model));
     var pieceSelected = false;
     var isPlayerTurn = vm.IsPlayerTurn;
+    var gameState = vm.GameState;
     var moveCoords = {};
+    var GameStateEnum = { Game: 0, GameOver: 1, NoGame: 2 };
     function refresh(vm) {
         $('.circle').remove();
         for (var i = 0; i < 8; i++) {
@@ -56,13 +58,19 @@
                 if (vm.Board[j][i].Color === 2)
                     $('.' + i + '-' + j).append("<div class='circle' style='background-color :blue'></div>");
             }
-            isPlayerTurn = vm.IsPlayerTurn;
-            if(isPlayerTurn)
-                $('#turn-indicator').text('Your turn');
-            else
-                $('#turn-indicator').text('Enemy\'s turn');
-
         }
+        isPlayerTurn = vm.IsPlayerTurn;
+        gameState = vm.GameState;
+        var message;
+        if (gameState === GameStateEnum.NoGame)
+            message = 'No game';
+        else if (gameState === GameStateEnum.GameOver)
+            message = 'Game over!';
+        else if (isPlayerTurn)
+            message = 'Your turn';
+        else
+            message = 'Enemy\'s turn';
+        $('#turn-indicator').text(message);
     }
     function getNumber(string) {
         var matches = string.match(/[0-9]-[0-9]/);
@@ -97,7 +105,7 @@
     });
 
     $('.board-field').click(function() {
-        if (!isPlayerTurn)
+        if (!isPlayerTurn || gameState !== GameStateEnum.Game)
             return;
         if (pieceSelected) {
             
@@ -139,7 +147,6 @@
             var name = getNumber(classes);
             moveCoords.fromX = parseInt(name[2]);
             moveCoords.fromY = parseInt(name[0]);
-            console.log(moveCoords);
         }
     });
 </script>

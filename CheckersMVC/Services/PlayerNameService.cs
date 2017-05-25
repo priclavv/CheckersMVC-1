@@ -34,7 +34,7 @@ namespace CheckersMVC.Services
         {
             if(g.Player1.Name != null && g.Player2.Name != null)
             {
-                g.GameState = Game.State.GAME;
+                g.GameState = Game.State.Game;
                 return true;
             }
             return false;

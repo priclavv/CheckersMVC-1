@@ -20,7 +20,7 @@ namespace Checkers
         {
             // sprawdza czy pionek moze ruszyc sie o jedna pozycje
             Position right, left;
-            if(pieceColor == Color.WHITE)
+            if(pieceColor == Color.White)
             {
                 left = position.NW();
                 right = position.NE();
@@ -59,8 +59,8 @@ namespace Checkers
             {
                 int diffX = destination.x - position.x;
                 int diffY = destination.y - position.y;
-                if ((pieceColor == Color.WHITE && diffY == 1 && Math.Abs(diffX) == 1) 
-                    || (pieceColor == Color.BLACK && diffY == -1 && Math.Abs(diffX) == 1))
+                if ((pieceColor == Color.White && diffY == 1 && Math.Abs(diffX) == 1) 
+                    || (pieceColor == Color.Black && diffY == -1 && Math.Abs(diffX) == 1))
                 {
                     if (board[destination] == null)
                         return true;
@@ -120,9 +120,9 @@ namespace Checkers
 
         public bool IsBecomeQueen()
         {
-            if (pieceColor == Color.BLACK && position.y == 0)
+            if (pieceColor == Color.Black && position.y == 0)
                 return true;
-            return pieceColor == Color.WHITE && position.y == Config.Cfg.board_size - 1 ? true : false;
+            return pieceColor == Color.White && position.y == Config.Cfg.board_size - 1 ? true : false;
             //sprawdza czy pionek jest dama
         }
 
@@ -146,7 +146,7 @@ namespace Checkers
         //4x funkcja sprawdzajaca po przekatnej 1 pole od siebie
         public override string ToString() // pomocnicza do wypisywania
         {
-            if (Color.BLACK == pieceColor)
+            if (Color.Black == pieceColor)
                 return "#";
             return "@";
         }
