@@ -29,5 +29,7 @@ namespace CheckersMVC.Models
         {
             return new ApplicationDbContext();
         }
+
+        public DbSet<PlayerStats> PlayerStatsList { get; set; }
     }
 }

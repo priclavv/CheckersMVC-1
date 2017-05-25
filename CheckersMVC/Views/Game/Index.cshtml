@@ -107,12 +107,14 @@
     $('.board-field').click(function() {
         if (!isPlayerTurn || gameState !== GameStateEnum.Game)
             return;
+        var name;
+        var classes;
         if (pieceSelected) {
             
             if (!$(this).children().length > 0) {
                 pieceSelected = false;
-                var classes = $(this).attr('class');
-                var name = getNumber(classes);
+                classes = $(this).attr('class');
+                name = getNumber(classes);
                 moveCoords.toX = parseInt(name[2]);
                 moveCoords.toY = parseInt(name[0]);
                 moveCoords.GameID = vm.GameID;
@@ -131,7 +133,6 @@
                 $(this).removeClass('field-border');
                 pieceSelected = false;
             }
-            // AJAX
             return;
         }   
         if (!$(this).children().length > 0) {
@@ -143,8 +144,8 @@
         } else {
             pieceSelected = true;
             $(this).addClass('field-border');
-            var classes = $(this).attr('class');
-            var name = getNumber(classes);
+            classes = $(this).attr('class');
+            name = getNumber(classes);
             moveCoords.fromX = parseInt(name[2]);
             moveCoords.fromY = parseInt(name[0]);
         }
