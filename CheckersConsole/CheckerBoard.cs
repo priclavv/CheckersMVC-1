@@ -43,12 +43,12 @@ namespace Checkers
             int row = Config.Cfg.board_size / 2 - 1;
             for (int y = 0; y < row; y++)
                 for (int x = 0; x < Config.Cfg.board_size; x+=2)
-                       board[x + y%2, y] = new Piece(Color.WHITE, new Position(x + y%2, y));
+                       board[x + y%2, y] = new Piece(Color.White, new Position(x + y%2, y));
             
            // gorna czesc z czarnymi pionkami
             for (int y = Config.Cfg.board_size - row; y < Config.Cfg.board_size; y++)
                 for (int x = 0; x < Config.Cfg.board_size; x+=2)
-                        board[x + y%2, y] = new Piece(Color.BLACK, new Position(x + y%2, y));
+                        board[x + y%2, y] = new Piece(Color.Black, new Position(x + y%2, y));
         }
 
         public CheckerBoard(int[,] array)

@@ -60,28 +60,19 @@ namespace CheckersMVC.Controllers
         }
         public ActionResult Move(MoveDTO moveCoords)
         {
-            GameVM vm = null;
+            GameVM vm;
             var name = User.Identity.Name;
-            Game currentGame = _gamesManager.GetGameById(moveCoords.GameID);
-            if (currentGame == null)
-                currentGame = _gamesManager.CreateGame(moveCoords.GameID);
+            Game currentGame = _gamesManager.GetGameById(moveCoords.GameID) ??
+                               _gamesManager.CreateGame(moveCoords.GameID);
             lock (currentGame)
             {
-                Player enemyPlayer = currentGame.CurrentPlayer == currentGame.Player1
-                 ? currentGame.Player2
-                 : currentGame.Player1;
-                if (currentGame.CurrentPlayer.Turn(currentGame.Board, enemyPlayer,
-                    currentGame.Board[moveCoords.fromX, moveCoords.fromY], new Position(moveCoords.toX, moveCoords.toY)))
-                {
-                    currentGame.CurrentPlayer = currentGame.CurrentPlayer == currentGame.Player1 ? currentGame.Player2 : currentGame.Player1;
-                }
-                vm = GameVM.From(currentGame);
-                if (currentGame.CurrentPlayer != null)
-                    vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
+                vm = currentGame.MakeTurnAndUpdateGame(moveCoords, name);
                 _gamesManager.SaveChanges(currentGame);
             }
             JsonResult result = new JsonResult { Data = JsonConvert.SerializeObject(vm) };
             return result;
         }
+
+
     }
 }

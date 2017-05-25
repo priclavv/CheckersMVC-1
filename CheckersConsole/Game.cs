@@ -2,12 +2,12 @@
 
 namespace Checkers
 {
-    public enum Color { UNDEFINED, WHITE, BLACK };
+    public enum Color { Undefined, White, Black };
 
     public class Game
     {
         public int GameID { get; set; }
-        public enum State { GAME, GAMEOVER, NOGAME };
+        public enum State { Game, Gameover, Nogame };
 
         public State GameState ;
         public CheckerBoard Board { get; set; }
@@ -33,7 +33,7 @@ namespace Checkers
         {
             Random gen = new Random(DateTime.Now.Millisecond);
 
-            Color col1 = gen.Next(1, 100) % 2 == 0 ? Color.BLACK : Color.WHITE;
+            Color col1 = gen.Next(1, 100) % 2 == 0 ? Color.Black : Color.White;
             int[,] array = { {0, 0, 0, 0, 0, 0, 0, 0},
                              {0, 0, 0, 1, 0, 0, 0, 0},
                              {0, 0, 0, 0, 0, 0, 0, 0},
@@ -48,10 +48,10 @@ namespace Checkers
             Board = new CheckerBoard();
 
             Player1 = new Player(col1, Board);
-            Player2 = new Player(col1 == Color.BLACK ? Color.WHITE : Color.BLACK, Board);
+            Player2 = new Player(col1 == Color.Black ? Color.White : Color.Black, Board);
 
-            CurrentPlayer = col1 == Color.WHITE ? Player1 : Player2;
-            GameState = State.NOGAME;
+            CurrentPlayer = col1 == Color.White ? Player1 : Player2;
+            GameState = State.Nogame;
        
 
             // kolor dla gracza wylosowac
@@ -61,11 +61,11 @@ namespace Checkers
 
         public void Run()
         {
-            while (GameState == State.GAME)
+            while (GameState == State.Game)
             {
                 if (IsGameOver())
                 {
-                    GameState = State.GAMEOVER;
+                    GameState = State.Gameover;
                     break;
                 }
                 Player enemy = CurrentPlayer == Player1 ? Player2 : Player1;
@@ -95,6 +95,16 @@ namespace Checkers
             }
                
             return false;
+        }
+
+        public void SetGameState()
+        {
+            if(Player1.Name == "" || Player2.Name == "")
+                GameState = State.Nogame;
+            else if (IsGameOver())
+                GameState = State.Gameover;
+            else
+                GameState = State.Game;
         }
 
         private void AnnounceWinning()
