@@ -159,9 +159,11 @@ namespace CheckersMVC.Controllers
                     var playerStats = new PlayerStats()
                     {
                         ApplicationUserId = user.Id,
+                        GamesPlayedCount = 0,
                         GamesWonCount = 0,
                         Name = user.UserName,
-                        User = user
+                        User = user,
+                        CreationDateTime = DateTime.Now
                     };
                     dbContext.PlayerStatsList.Add(playerStats);
                     dbContext.SaveChanges();
