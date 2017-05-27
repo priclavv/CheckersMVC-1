@@ -14,7 +14,7 @@ namespace CheckersMVC.Controllers
         {
             ApplicationDbContext db = new ApplicationDbContext();
             var playerStatsList = db.PlayerStatsList.ToList();
-            playerStatsList.Sort((x, y) => x.GamesWonCount > y.GamesWonCount ? 1 : -1);
+            playerStatsList.Sort((x, y) => x.GamesWonCount > y.GamesWonCount ? -1 : 1);
             return View(playerStatsList);
         }
 

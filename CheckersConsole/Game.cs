@@ -23,6 +23,7 @@ namespace Checkers
 
         public Player Winner
         {
+            get { return winner; }
             set
             {
                 winner = value;

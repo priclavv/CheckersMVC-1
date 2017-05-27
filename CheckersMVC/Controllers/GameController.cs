@@ -68,6 +68,11 @@ namespace CheckersMVC.Controllers
             {
                 vm = currentGame.MakeTurnAndUpdateGame(moveCoords, name);
                 _gamesManager.SaveChanges(currentGame);
+                if (currentGame.GameState == Game.State.Gameover)
+                {
+                    var service = new PlayerStatsService(new ApplicationDbContext());
+                    service.UpdatePlayerStats(currentGame);
+                }
             }
             JsonResult result = new JsonResult { Data = JsonConvert.SerializeObject(vm) };
             return result;

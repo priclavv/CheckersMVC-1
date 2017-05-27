@@ -215,6 +215,7 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\PlayerNameService.cs" />
+    <Compile Include="Services\PlayerStatsService.cs" />
     <Compile Include="Services\TurnGameExtender.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\GameVM.cs" />
