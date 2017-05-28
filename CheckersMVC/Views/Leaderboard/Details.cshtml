@@ -1,0 +1,87 @@
+﻿@using CheckersMVC.Models
+@model CheckersMVC.ViewModels.PlayerStatsVM
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>@(Model.Stats.Name)</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.GamesWonCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.GamesWonCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.GamesPlayedCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.GamesPlayedCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationDate)
+        </dd>
+
+    </dl>
+</div>
+<table class="table">
+    <tr>
+        <th>Result</th>
+        <th>Opponent</th>
+        <th>Duration time</th>
+    </tr>
+    @{
+        foreach (var gameHistory in Model.PlayedGames)
+        {
+            <tr>
+                <td>
+                    @{
+                        string message = "Draw";
+                        string opponent;
+                        if (gameHistory.Winner.Id == Model.Stats.ApplicationUserId)
+                        {
+                            message = "Won";
+                            opponent = gameHistory.Loser.UserName;
+                        }
+                        else
+                        {
+                            message = "Lost";
+                            opponent = gameHistory.Winner.UserName;
+                        }
+                        <text> @message</text>
+                    }
+                </td>
+                <td>
+                    @opponent
+                </td>
+                <td>
+                    @((gameHistory.EndTime - gameHistory.EndTime).Minutes) minutes
+                </td>
+            </tr>
+            }
+    }
+</table>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -21,7 +21,15 @@ namespace CheckersMVC.Controllers
         // GET: Leaderboard/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            try
+            {
+                var vm = new ViewModels.PlayerStatsVM(new ApplicationDbContext(), id);
+                return View(vm);
+            }
+            catch (Exception e)
+            {
+                return HttpNotFound(e.Message);
+            }
         }
     }
 }
