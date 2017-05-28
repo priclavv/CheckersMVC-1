@@ -38,17 +38,34 @@
         <h2 id="turn-indicator"></h2>
     </div>
     <div class="col-md-4">
-        <div class="col-md-6 ">
-            <div id="owner-info">
+        <div class="row margin-top">
+            <div class="col-md-6">Owner</div>
+            <div class="col-md-6">Player</div>
+        </div>
+        <div class="row margin-top">
+            <div class="col-md-6" id="owner-info">
                 <span class="glyphicon glyphicon-user"></span>
                 <text id="owner-name">Owner</text>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div id="player-info">
+            <div class="col-md-6" id="player-info">
                 <span class="glyphicon glyphicon-user"></span>
                 <text id="player-name">Player</text>
             </div>
+        </div>
+        <div class="row margin-top">
+            <div class="col-md-6">
+                <button class="btn btn-block disabled" id="owner-btn">
+                    <span class="glyphicon glyphicon-play"></span>  Become owner
+                </button>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-block disabled" id="player-btn">
+                    <span class="glyphicon glyphicon-play"></span>  Join
+                </button>
+            </div>
+        </div>
+        <div class="row margin-top">
+            <button class="btn btn-block disabled" id="restart-btn">Restart</button>
         </div>
     </div>
 </div>
@@ -94,13 +111,24 @@
 
     function setPlayerNames(vm) {
         var name1 = "no owner";
-        if (vm.OwnerName !== null)
-            name1 = vm.PlayerName1;
         var name2 = "no player";
-        if (vm.PlayerName2 !== null)
-            name2 = vm.PlayerName2;
-        $("#player-name").text(name1);
-        $("#owner-name").text(name2);
+        if (vm.OwnerName !== null) {
+            name1 = vm.OwnerName;
+            $("#owner-btn").addClass("disabled");
+        } else {
+            $("#owner-btn").removeClass("disabled");
+        }
+        var playerName = vm.OwnerName === vm.PlayerName1 ? vm.PlayerName2 : vm.PlayerName1;
+        if (playerName !== null){
+            name2 = playerName;
+            $("#player-btn").addClass("disabled");
+        } else {
+            $("#player-btn").removeClass("disabled");
+        }
+        $("#owner-name").text(name1);
+        $("#player-name").text(name2);
+        if (vm.gameState !== GameStateEnum.Game)
+            return;
         if (vm.CurrentPlayerName === name1) {
             $("#player-info").removeClass("playing");
             $("#owner-info").addClass("playing");
