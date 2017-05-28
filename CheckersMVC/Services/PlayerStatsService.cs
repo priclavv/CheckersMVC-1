@@ -9,7 +9,7 @@ namespace CheckersMVC.Services
 {
     public class PlayerStatsService
     {
-        private ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
         public PlayerStatsService(ApplicationDbContext dbContext)
         {
@@ -25,6 +25,7 @@ namespace CheckersMVC.Services
             var loser = _dbContext.PlayerStatsList.First(x => x.Name == loserName);
             winner.GamesWonCount++;
             winner.GamesPlayedCount++;
+            loser.GamesLostCount++;
             loser.GamesPlayedCount++;
         }
 
@@ -33,9 +34,9 @@ namespace CheckersMVC.Services
             var playerStats1 = _dbContext.PlayerStatsList.First(x => x.Name == currentGame.Player1.Name);
             var playerStats2 = _dbContext.PlayerStatsList.First(x => x.Name == currentGame.Player2.Name);
             playerStats1.GamesPlayedCount++;
-            playerStats1.GamesWonCount++;
+            playerStats1.GamesDrawnCount++;
             playerStats2.GamesPlayedCount++;
-            playerStats2.GamesWonCount++;
+            playerStats2.GamesDrawnCount++;
         }
 
         public void UpdatePlayerStats(Game currentGame)

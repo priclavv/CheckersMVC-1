@@ -12,13 +12,12 @@
     <dl class="dl-horizontal">
 
         <dt>
-            @Html.DisplayNameFor(model => model.Stats.Name)
+            @Html.DisplayNameFor(model => model.Stats.GamesPlayedCount)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Stats.Name)
+            @Html.DisplayFor(model => model.Stats.GamesPlayedCount)
         </dd>
-
         <dt>
             @Html.DisplayNameFor(model => model.Stats.GamesWonCount)
         </dt>
@@ -26,13 +25,20 @@
         <dd>
             @Html.DisplayFor(model => model.Stats.GamesWonCount)
         </dd>
-
         <dt>
-            @Html.DisplayNameFor(model => model.Stats.GamesPlayedCount)
+            @Html.DisplayNameFor(model => model.Stats.GamesDrawnCount)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Stats.GamesPlayedCount)
+            @Html.DisplayFor(model => model.Stats.GamesDrawnCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.GamesLostCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.GamesLostCount)
         </dd>
 
         <dt>
@@ -61,7 +67,7 @@
                     @Html.ActionLink(gameHistoryVm.OpponentName, "Details", new {id = gameHistoryVm.OpponentStatsId})
                 </td>
                 <td>@gameHistoryVm.StartDateTime</td>
-                <td>@gameHistoryVm.GameDurationInMinutes</td>
+                <td>@gameHistoryVm.GameDurationInMinutes minutes</td>
             </tr>
             }
     }

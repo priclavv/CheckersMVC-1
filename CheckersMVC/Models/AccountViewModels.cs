@@ -43,7 +43,7 @@ namespace CheckersMVC.Models
     {
         [Required]
         [Display(Name = "Nickname")]
-        public string Email { get; set; }
+        public string Nickname { get; set; }
     }
 
     public class LoginViewModel
