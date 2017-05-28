@@ -291,6 +291,7 @@
     <Content Include="Views\Leaderboard\Index.cshtml" />
     <Content Include="Views\Leaderboard\Details.cshtml" />
     <Content Include="Views\Room\Index.cshtml" />
+    <Content Include="Views\Room\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

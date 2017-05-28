@@ -25,6 +25,13 @@ namespace CheckersMVC.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult Create([Bind(Include = "Name")]Room room)
+        {
+            var name = User.Identity.Name;
+            _roomManager.CreateRoom(room.Name, new Models.User { Name = name });
+            return RedirectToAction("Index");
+        }
         private RoomVM[] VmFromRooms(Room[] rooms)
         {
             RoomVM[] roomVM = new RoomVM[rooms.Length];

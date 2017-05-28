@@ -42,6 +42,7 @@ namespace CheckersMVC.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Refresh([Bind(Include = "GameID")]RefreshDTO dto)
         {
