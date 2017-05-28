@@ -20,8 +20,28 @@ namespace CheckersMVC.Controllers
     public class GameController : Controller
     {
         private readonly IRoomManager _roomsManager = RoomManagerFactory.Instance.RoomManager;
-        private static int index = 0;
         public ActionResult Index(int id = 0)
+        {
+            var name = User.Identity.Name;
+            Room currentRoom = _roomsManager.GetRoomById(id);
+            if (currentRoom == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            var currentGame = currentRoom.Game;
+            if (name == currentRoom.Owner.Name)
+                _roomsManager.AddUserToRoom(new User() {Name = name}, id);
+            lock (currentGame)
+            {
+                GameVM vm = GameVM.From(currentGame, currentRoom.Owner.Name);
+                if (currentGame.CurrentPlayer != null)
+                {
+                    vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
+                }
+                _roomsManager.SaveChanges(currentGame);
+                return View(vm);
+            }
+        }
+
+        public ActionResult Join(int id)
         {
             var name = User.Identity.Name;
             Room currentRoom = _roomsManager.GetRoomById(id);
@@ -31,16 +51,10 @@ namespace CheckersMVC.Controllers
             lock (currentGame)
             {
                 GameVM vm = GameVM.From(currentGame, currentRoom.Owner.Name);
-                index++;
-                if ( currentGame.GetPlayerByName(name) == null && !currentGame.AddUserToGame(new Models.User() {Name = name }))
-                    name = "";
-                if (currentGame.CurrentPlayer != null)
-                {
-                    vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
-                }
-                _roomsManager.SaveChanges(currentGame);
-                return View(vm);
+                _roomsManager.AddUserToRoom(new User() {Name = name}, id);
+                return RedirectToAction("Index");
             }
+
         }
 
         [HttpPost]
