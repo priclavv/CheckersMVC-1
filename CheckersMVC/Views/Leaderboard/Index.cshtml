@@ -22,7 +22,10 @@
             @Html.DisplayNameFor(model => model.GamesWonCount)
         </th>
         <th>
-            Ratio
+            @Html.DisplayNameFor(model => model.GamesDrawnCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.GamesLostCount)
         </th>
     </tr>
 
@@ -42,16 +45,10 @@
             @Html.DisplayFor(modelItem => item.GamesWonCount)
         </td>
         <td>
-            @{
-                if (item.GamesPlayedCount == 0)
-                {
-                    <text>-</text>
-                }
-                else
-                {
-                    <text>@($"{(double) item.GamesWonCount / (double) item.GamesPlayedCount}")</text>
-                }
-            }
+            @Html.DisplayFor(modelItem => item.GamesDrawnCount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.GamesLostCount)
         </td>
         <td>
             @Html.ActionLink("Details", "Details", new {id = item.Id})
