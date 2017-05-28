@@ -18,4 +18,5 @@ namespace CheckersMVC.Models
         public virtual ApplicationUser Winner { get; set; }
         public virtual ApplicationUser Loser { get; set; }
     }
+
 }
