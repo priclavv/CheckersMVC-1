@@ -17,15 +17,16 @@ namespace CheckersMVC.Controllers
 {
     public class GameController : Controller
     {
-        private readonly IGamesManager _gamesManager = GameManagerFactory.Instance.GamesManager;
+        private readonly IRoomManager _roomsManager = RoomManagerFactory.Instance.RoomManager;
         private static int index = 0;
         [Authorize]
         public ActionResult Index(int id = 0)
         {
             var name = User.Identity.Name;
-            Game currentGame = _gamesManager.GetGameById(id);
-            if (currentGame == null)
-                currentGame = _gamesManager.CreateGame(id);
+            Room currentRoom = _roomsManager.GetRoomById(id);
+            if (currentRoom == null)
+                currentRoom = _roomsManager.CreateRoom("gra", new User() { Name = name });
+            var currentGame = currentRoom.Game;
             lock (currentGame)
             {
                 GameVM vm = GameVM.From(currentGame);
@@ -36,7 +37,7 @@ namespace CheckersMVC.Controllers
                 {
                     vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
                 }
-                _gamesManager.SaveChanges(currentGame);
+                _roomsManager.SaveChanges(currentGame);
                 return View(vm);
             }
         }
@@ -44,11 +45,12 @@ namespace CheckersMVC.Controllers
         [HttpPost]
         public ActionResult Refresh([Bind(Include = "GameID")]RefreshDTO dto)
         {
-            int id = dto.GameID;
-            Game currentGame = _gamesManager.GetGameById(id);
-            if (currentGame == null)
-                currentGame = _gamesManager.CreateGame(id);
             var name = User.Identity.Name;
+            int id = dto.GameID;
+            Room currentRoom = _roomsManager.GetRoomById(id);
+            if (currentRoom == null)
+                currentRoom = _roomsManager.CreateRoom("gra", new User() { Name = name });
+            var currentGame = currentRoom.Game;
             lock (currentGame)
             {
                 GameVM vm = GameVM.From(currentGame);
@@ -62,12 +64,14 @@ namespace CheckersMVC.Controllers
         {
             GameVM vm;
             var name = User.Identity.Name;
-            Game currentGame = _gamesManager.GetGameById(moveCoords.GameID) ??
-                               _gamesManager.CreateGame(moveCoords.GameID);
+            Room currentRoom = _roomsManager.GetRoomById(moveCoords.GameID);
+            if (currentRoom == null)
+                currentRoom = _roomsManager.CreateRoom("gra", new User() { Name = name });
+            var currentGame = currentRoom.Game;
             lock (currentGame)
             {
                 vm = currentGame.MakeTurnAndUpdateGame(moveCoords, name);
-                _gamesManager.SaveChanges(currentGame);
+                _roomsManager.SaveChanges(currentGame);
                 if (currentGame.GameState == Game.State.Gameover)
                 {
                     var dbContext = new ApplicationDbContext();

@@ -8,37 +8,76 @@ using System.Collections.Concurrent;
 
 namespace CheckersMVC.Helpers
 {
-    public class VolatileGamesManager : IGamesManager
+    public class VolatileGamesManager : IRoomManager
     {
-        private ConcurrentDictionary<int, Game> _games;
+        private ConcurrentDictionary<int, Room> _rooms;
+        private int _limit = 50;
         public VolatileGamesManager()
         {
-            _games = new ConcurrentDictionary<int, Game>();
-        }
-        public Game CreateGame(int gameID)
-        {
-            Game newGame = GetGameById(gameID);
-            if (newGame != null)
-                return newGame;
-            newGame = new Game();
-            newGame.StartTime = DateTime.Now;
-            newGame.GameID = gameID;
-            _games.TryAdd(gameID, newGame);
-            return newGame;
+            _rooms = new ConcurrentDictionary<int, Room>();
         }
 
-        public Game GetGameById(int gameID)
+        public bool AddUserToRoom(User user, int roomID)
         {
-            Game game;
-            if (!_games.TryGetValue(gameID, out game))
-                game = null;
-            return game;
+            throw new NotImplementedException();
         }
 
-        public bool RemoveGame(int gameID)
+        public Room CreateRoom(string name, User owner)
         {
-            Game gameToRemove;
-            return _games.TryRemove(gameID, out gameToRemove);
+            if (_rooms.Count == _limit)
+                return null;
+            int id = CalculateFreeRoomId();
+            Game game = new Game()
+            {
+                GameID = id,
+                GameState = Game.State.Nogame
+            };
+            Room room = new Room()
+            {
+                Game = game,
+                Name = name,
+                Owner = owner
+            };
+            _rooms.TryAdd(id, room);
+            return room;
+
+        }
+        private int CalculateFreeRoomId()
+        {
+            int currentId = 0;
+            int[] keys = _rooms.Keys.OrderBy(k => k).ToArray();
+            if (keys.Length == 0)
+                return currentId;
+            foreach(var id in keys)
+            {
+                if (id != currentId)
+                    return currentId;
+                currentId++;
+            }
+            return keys.Last() + 1;
+        }
+        public Room[] GetAllRooms()
+        {
+            return _rooms.Values.ToArray();
+        }
+
+        public Room GetRoomById(int roomID)
+        {
+            Room room;
+            if (!_rooms.TryGetValue(roomID, out room))
+                room = null;
+            return room;
+        }
+
+        public bool RemoveRoom(int roomID)
+        {
+            Room roomToRemove;
+            return _rooms.TryRemove(roomID, out roomToRemove);
+        }
+
+        public bool RemoveUserFromRoom(User user, int roomID)
+        {
+            throw new NotImplementedException();
         }
 
         //We're operating on reference to game object, so no need to save anything
