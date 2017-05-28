@@ -5,6 +5,7 @@ using System.Web;
 using Checkers;
 using CheckersMVC.Models;
 using System.Collections.Concurrent;
+using CheckersMVC.Services;
 
 namespace CheckersMVC.Helpers
 {
@@ -19,7 +20,12 @@ namespace CheckersMVC.Helpers
 
         public bool AddUserToRoom(User user, int roomID)
         {
-            throw new NotImplementedException();
+            if (!CanUserJoinGame(user))
+                return false;
+            var room = GetRoomById(roomID);
+            if (room == null)
+                return false;
+            return room.Game.AddUserToGame(user);
         }
 
         public Room CreateRoom(string name, User owner)
@@ -43,6 +49,13 @@ namespace CheckersMVC.Helpers
             _rooms.TryAdd(id, room);
             return room;
 
+        }
+        private bool CanUserJoinGame(User user)
+        {
+            var users = _rooms.Where(r => r.Value.IsUserPlayingInRoom(user));
+            if (users.Count() == 0)
+                return true;
+            return false;
         }
         private bool CanUserCreateRoom(User user)
         {
@@ -86,7 +99,10 @@ namespace CheckersMVC.Helpers
 
         public bool RemoveUserFromRoom(User user, int roomID)
         {
-            throw new NotImplementedException();
+            var room = GetRoomById(roomID);
+            if (room == null)
+                return false;
+            return room.Game.RemoveUserFromGame(user);
         }
 
         //We're operating on reference to game object, so no need to save anything
