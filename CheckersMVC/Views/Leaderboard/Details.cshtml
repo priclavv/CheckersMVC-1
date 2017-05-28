@@ -49,35 +49,19 @@
     <tr>
         <th>Result</th>
         <th>Opponent</th>
+        <th>Start time</th>
         <th>Duration time</th>
     </tr>
     @{
-        foreach (var gameHistory in Model.PlayedGames)
+        foreach (var gameHistoryVm in Model.PlayedGames)
         {
             <tr>
+                <td>@gameHistoryVm.Result</td>
                 <td>
-                    @{
-                        string message = "Draw";
-                        string opponent;
-                        if (gameHistory.Winner.Id == Model.Stats.ApplicationUserId)
-                        {
-                            message = "Won";
-                            opponent = gameHistory.Loser.UserName;
-                        }
-                        else
-                        {
-                            message = "Lost";
-                            opponent = gameHistory.Winner.UserName;
-                        }
-                        <text> @message</text>
-                    }
+                    @Html.ActionLink(gameHistoryVm.OpponentName, "Details", new {id = gameHistoryVm.OpponentStatsId})
                 </td>
-                <td>
-                    @opponent
-                </td>
-                <td>
-                    @((gameHistory.EndTime - gameHistory.EndTime).Minutes) minutes
-                </td>
+                <td>@gameHistoryVm.StartDateTime</td>
+                <td>@gameHistoryVm.GameDurationInMinutes</td>
             </tr>
             }
     }
