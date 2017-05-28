@@ -59,9 +59,9 @@
                 </button>
             </div>
             <div class="col-md-6">
-                <a href="@Url.Action("Join",new {id = Model.GameID })"class="btn btn-block disabled" id="player-btn">
+                <button class="btn btn-block disabled" id="player-btn">
                     <span class="glyphicon glyphicon-play"></span>  Join
-                </a>
+                </button>
             </div>
         </div>
         <div class="row margin-top">
@@ -99,16 +99,26 @@
         var message;
         if (gameState === GameStateEnum.NoGame)
             message = 'No game';
-        else if (gameState === GameStateEnum.GameOver)
+        else if (gameState === GameStateEnum.GameOver) {
             message = 'Game over!';
-        else if (isPlayerTurn)
+        }
+        else if (isPlayerTurn) {
             message = 'Your turn';
+        }
         else
             message = 'Enemy\'s turn';
         $('#turn-indicator').text(message);
         setPlayerNames(vm);
+        setRestartButtonVisibility(vm);
     }
 
+    function setRestartButtonVisibility(vm) {
+        if (vm.GameState === GameStateEnum.GameOver)
+            $("#restart-btn").removeClass("disabled");
+        else {
+            $("#restart-btn").addClass("disabled")
+        }
+    }
     function setPlayerNames(vm) {
         var name1 = "no owner";
         var name2 = "no player";
@@ -127,7 +137,7 @@
         }
         $("#owner-name").text(name1);
         $("#player-name").text(name2);
-        if (vm.gameState !== GameStateEnum.Game)
+        if (vm.GameState !== GameStateEnum.Game)
             return;
         if (vm.CurrentPlayerName === name1) {
             $("#player-info").removeClass("playing");
@@ -168,6 +178,34 @@
     $(document).ready(function() {
         refresh(vm);
         updateBoard();
+    });
+
+    $('#restart-btn').click(function() {
+        var dto = {}
+        dto.GameID = vm.GameID;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Restart")",
+            data: dto,
+            dataType: "json"
+        }).success(function(data) {
+            var newVm = JSON.parse(data);
+            refresh(newVm);
+        });
+    });
+
+    $('#player-btn').click(function() {
+        var dto = {}
+        dto.GameID = vm.GameID;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Join")",
+            data: dto,
+        dataType: "json"
+    }).success(function(data) {
+        var newVm = JSON.parse(data);
+        refresh(newVm);
+    });
     });
 
     $('.board-field').click(function() {

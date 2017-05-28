@@ -40,10 +40,11 @@ namespace CheckersMVC.Controllers
                 return View(vm);
             }
         }
-
-        public ActionResult Join(int id)
+        [HttpPost]
+        public ActionResult Join([Bind(Include = "GameID")]RefreshDTO dto)
         {
             var name = User.Identity.Name;
+            int id = dto.GameID;
             Room currentRoom = _roomsManager.GetRoomById(id);
             if (currentRoom == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -52,11 +53,26 @@ namespace CheckersMVC.Controllers
             {
                 GameVM vm = GameVM.From(currentGame, currentRoom.Owner.Name);
                 _roomsManager.AddUserToRoom(new User() {Name = name}, id);
-                return RedirectToAction("Index");
+                return Refresh(dto);
             }
 
         }
-
+        [HttpPost]
+        public ActionResult Restart([Bind(Include = "GameID")]RefreshDTO dto)
+        {
+            Room currentRoom = _roomsManager.GetRoomById(dto.GameID);
+            var name = User.Identity.Name;
+            var playerName1 = currentRoom.Game.Player1.Name;
+            var playerName2 = currentRoom.Game.Player2.Name;
+            if (playerName1 != name && playerName2 != name)
+                return HttpNotFound();
+            if (currentRoom.Game.GameState == Game.State.Game)
+                return HttpNotFound();
+            currentRoom.Game.InitGame();
+            currentRoom.Game.AddUserToGame(new User(){ Name = playerName1 });
+            currentRoom.Game.AddUserToGame(new User(){ Name = playerName2 });
+            return Refresh(dto);
+        }
         [HttpPost]
         public ActionResult Refresh([Bind(Include = "GameID")]RefreshDTO dto)
         {
