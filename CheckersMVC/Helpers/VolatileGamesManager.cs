@@ -21,6 +21,7 @@ namespace CheckersMVC.Helpers
             if (newGame != null)
                 return newGame;
             newGame = new Game();
+            newGame.StartTime = DateTime.Now;
             newGame.GameID = gameID;
             _games.TryAdd(gameID, newGame);
             return newGame;

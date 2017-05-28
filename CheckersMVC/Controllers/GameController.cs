@@ -70,8 +70,11 @@ namespace CheckersMVC.Controllers
                 _gamesManager.SaveChanges(currentGame);
                 if (currentGame.GameState == Game.State.Gameover)
                 {
-                    var service = new PlayerStatsService(new ApplicationDbContext());
+                    var dbContext = new ApplicationDbContext();
+                    var service = new PlayerStatsService(dbContext);
+                    var gameHistoryService = new GameHistoryService(dbContext);
                     service.UpdatePlayerStats(currentGame);
+                    gameHistoryService.SaveGameToHistory(currentGame);
                 }
             }
             JsonResult result = new JsonResult { Data = JsonConvert.SerializeObject(vm) };

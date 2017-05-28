@@ -9,12 +9,13 @@ namespace Checkers
         public int GameID { get; set; }
         public enum State { Game, Gameover, Nogame };
 
-        public State GameState ;
+        public State GameState { get; set;}
         public CheckerBoard Board { get; set; }
         public Player Player1 { get; set; }
         public Player Player2 { get; set; } 
         public Player CurrentPlayer { get; set; }
         protected Player winner;
+        public DateTime StartTime { get; set; }
 
         public Game()
         {
