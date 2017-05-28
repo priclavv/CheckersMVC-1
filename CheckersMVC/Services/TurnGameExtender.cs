@@ -10,7 +10,7 @@ namespace CheckersMVC.Services
 {
     public static class TurnGameExtender
     {
-        public static GameVM MakeTurnAndUpdateGame(this Game currentGame, MoveDTO moveCoords, string name)
+        public static GameVM MakeTurnAndUpdateGame(this Game currentGame, MoveDTO moveCoords, string name, string ownerName)
         {
             GameVM vm;
             Player enemyPlayer = currentGame.CurrentPlayer == currentGame.Player1
@@ -21,7 +21,7 @@ namespace CheckersMVC.Services
             {
                 currentGame.CurrentPlayer = currentGame.CurrentPlayer == currentGame.Player1 ? currentGame.Player2 : currentGame.Player1;
             }
-            vm = GameVM.From(currentGame);
+            vm = GameVM.From(currentGame, ownerName);
             if (currentGame.CurrentPlayer != null)
                 vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
             currentGame.SetGameState();

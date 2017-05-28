@@ -10,7 +10,7 @@ namespace CheckersMVC.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Room");
         }
 
         public ActionResult About()

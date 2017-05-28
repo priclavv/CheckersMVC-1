@@ -29,7 +29,7 @@ namespace CheckersMVC.Controllers
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
-                GameVM vm = GameVM.From(currentGame);
+                GameVM vm = GameVM.From(currentGame, currentRoom.Owner.Name);
                 index++;
                 if ( currentGame.GetPlayerByName(name) == null && !currentGame.AddUserToGame(new Models.User() {Name = name }))
                     name = "";
@@ -53,7 +53,7 @@ namespace CheckersMVC.Controllers
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
-                GameVM vm = GameVM.From(currentGame);
+                GameVM vm = GameVM.From(currentGame, currentRoom.Owner.Name);
                 if (currentGame.CurrentPlayer != null)
                     vm.IsPlayerTurn = currentGame.CurrentPlayer.Name == name;
                 JsonResult result = new JsonResult { Data = JsonConvert.SerializeObject(vm) };
@@ -70,7 +70,7 @@ namespace CheckersMVC.Controllers
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
-                vm = currentGame.MakeTurnAndUpdateGame(moveCoords, name);
+                vm = currentGame.MakeTurnAndUpdateGame(moveCoords, name, currentRoom.Owner.Name);
                 _roomsManager.SaveChanges(currentGame);
                 if (currentGame.GameState == Game.State.Gameover)
                 {

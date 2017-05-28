@@ -42,3 +42,9 @@ textarea {
        border-style: solid;
        border-color: red;
    }
+
+   .playing {
+       font-weight: bold;
+       border-style: solid;
+       border-color: black;
+   }

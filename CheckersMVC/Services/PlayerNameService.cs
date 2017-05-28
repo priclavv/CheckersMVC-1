@@ -35,6 +35,7 @@ namespace CheckersMVC.Services
             if(g.Player1.Name != null && g.Player2.Name != null)
             {
                 g.GameState = Game.State.Game;
+                g.StartTime = DateTime.Now;
                 return true;
             }
             return false;
