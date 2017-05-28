@@ -24,6 +24,8 @@ namespace CheckersMVC.Helpers
 
         public Room CreateRoom(string name, User owner)
         {
+            if (!CanUserCreateRoom(owner))
+                return null;
             if (_rooms.Count == _limit)
                 return null;
             int id = CalculateFreeRoomId();
@@ -41,6 +43,13 @@ namespace CheckersMVC.Helpers
             _rooms.TryAdd(id, room);
             return room;
 
+        }
+        private bool CanUserCreateRoom(User user)
+        {
+            var users = _rooms.Where(r => r.Value.IsUserOwnerOfRoom(user) || r.Value.IsUserPlayingInRoom(user));
+            if (users.Count() == 0)
+                return true;
+            return false;
         }
         private int CalculateFreeRoomId()
         {
