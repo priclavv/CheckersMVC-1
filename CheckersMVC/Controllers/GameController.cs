@@ -12,20 +12,21 @@ using CheckersMVC.ViewModels;
 using Newtonsoft.Json;
 using CheckersMVC.Helpers;
 using CheckersMVC.Models;
+using System.Net;
 
 namespace CheckersMVC.Controllers
 {
+    [Authorize]
     public class GameController : Controller
     {
         private readonly IRoomManager _roomsManager = RoomManagerFactory.Instance.RoomManager;
         private static int index = 0;
-        [Authorize]
         public ActionResult Index(int id = 0)
         {
             var name = User.Identity.Name;
             Room currentRoom = _roomsManager.GetRoomById(id);
             if (currentRoom == null)
-                currentRoom = _roomsManager.CreateRoom("gra", new User() { Name = name });
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
@@ -42,7 +43,6 @@ namespace CheckersMVC.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost]
         public ActionResult Refresh([Bind(Include = "GameID")]RefreshDTO dto)
         {
@@ -50,7 +50,7 @@ namespace CheckersMVC.Controllers
             int id = dto.GameID;
             Room currentRoom = _roomsManager.GetRoomById(id);
             if (currentRoom == null)
-                currentRoom = _roomsManager.CreateRoom("gra", new User() { Name = name });
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
@@ -61,13 +61,14 @@ namespace CheckersMVC.Controllers
                 return result;
             }
         }
+        [HttpPost]
         public ActionResult Move(MoveDTO moveCoords)
         {
             GameVM vm;
             var name = User.Identity.Name;
             Room currentRoom = _roomsManager.GetRoomById(moveCoords.GameID);
             if (currentRoom == null)
-                currentRoom = _roomsManager.CreateRoom("gra", new User() { Name = name });
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {

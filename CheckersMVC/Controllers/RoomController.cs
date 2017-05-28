@@ -11,6 +11,7 @@ using System.Web.Mvc;
 
 namespace CheckersMVC.Controllers
 {
+    [Authorize]
     public class RoomController : Controller
     {
         // GET: Room
@@ -29,8 +30,13 @@ namespace CheckersMVC.Controllers
         public ActionResult Create([Bind(Include = "Name")]Room room)
         {
             var name = User.Identity.Name;
-            _roomManager.CreateRoom(room.Name, new Models.User { Name = name });
-            return RedirectToAction("Index");
+            var newRoom = _roomManager.CreateRoom(room.Name, new Models.User { Name = name });
+            if(newRoom != null)
+            {
+                return RedirectToAction("Index", "Game", new { id = newRoom.Game.GameID });
+            }
+            return View("Index");
+            
         }
         private RoomVM[] VmFromRooms(Room[] rooms)
         {
