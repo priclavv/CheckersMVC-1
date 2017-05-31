@@ -117,6 +117,18 @@ namespace CheckersMVC.Controllers
             return result;
         }
 
+        public ActionResult Quit([Bind(Include = "GameID")]RefreshDTO dto)
+        {
+            if (_roomsManager.RemoveUserFromRoom(new User() {Name = User.Identity.Name}, dto.GameID))
+            {
+                var currentRoom = _roomsManager.GetRoomById(dto.GameID);
+                var playerName = currentRoom.Game.Player1.Name ?? currentRoom.Game.Player2.Name;
+                currentRoom.Game.InitGame();
+                currentRoom.Game.AddUserToGame(new User() { Name = playerName });
+            }
+            return Refresh(dto);
+        } 
+
 
     }
 }

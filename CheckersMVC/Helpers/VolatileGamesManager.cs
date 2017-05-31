@@ -102,6 +102,8 @@ namespace CheckersMVC.Helpers
             var room = GetRoomById(roomID);
             if (room == null)
                 return false;
+            if (room.IsUserOwnerOfRoom(user))
+                room.Owner.Name = null;
             return room.Game.RemoveUserFromGame(user);
         }
 

@@ -21,6 +21,7 @@ namespace CheckersMVC.Services
                 g.Player1.Name = null;
             if (g.Player2.Name == user.Name)
                 g.Player2.Name = null;
+            g.SetGameState();
             return true;
         }
         public static bool SetPlayerName(this Game g, string name)

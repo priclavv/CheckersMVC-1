@@ -67,6 +67,9 @@
         <div class="row margin-top">
             <button class="btn btn-block disabled" id="restart-btn">Restart</button>
         </div>
+        <div class="row margin-top">
+            <button class="btn btn-block" id="quit-btn">Quit</button>
+        </div>
     </div>
 </div>
 @Scripts.Render("~/bundles/jquery")
@@ -192,6 +195,19 @@
             var newVm = JSON.parse(data);
             refresh(newVm);
         });
+    });
+    $('#quit-btn').click(function() {
+        var dto = {}
+        dto.GameID = vm.GameID;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Quit")",
+            data: dto,
+        dataType: "json"
+    }).success(function(data) {
+        var newVm = JSON.parse(data);
+        refresh(newVm);
+    });
     });
 
     $('#player-btn').click(function() {

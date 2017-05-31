@@ -101,7 +101,7 @@ namespace Checkers
 
         public void SetGameState()
         {
-            if(Player1.Name == "" || Player2.Name == "")
+            if(Player1.Name == null || Player2.Name == null)
                 GameState = State.Nogame;
             else if (IsGameOver())
                 GameState = State.Gameover;
