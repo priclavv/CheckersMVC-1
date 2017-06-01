@@ -25,7 +25,12 @@ namespace CheckersMVC.Helpers
             var room = GetRoomById(roomID);
             if (room == null)
                 return false;
-            return room.Game.AddUserToGame(user);
+            bool isAdded = room.Game.AddUserToGame(user);
+            if(isAdded)
+            {
+                room.StartUsersTimer(user);
+            }
+            return isAdded;
         }
 
         public Room CreateRoom(string name, User owner)
@@ -102,9 +107,7 @@ namespace CheckersMVC.Helpers
             var room = GetRoomById(roomID);
             if (room == null)
                 return false;
-            if (room.IsUserOwnerOfRoom(user))
-                room.Owner.Name = null;
-            return room.Game.RemoveUserFromGame(user);
+            return room.RemoveUserFromRoom(user);
         }
 
         //We're operating on reference to game object, so no need to save anything

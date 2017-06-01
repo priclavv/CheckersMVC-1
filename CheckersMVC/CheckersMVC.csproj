@@ -208,6 +208,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\IGamesManager.cs" />
+    <Compile Include="Helpers\TimerEventHelper.cs" />
     <Compile Include="Helpers\VolatileGamesManager.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\GameHistory.cs" />

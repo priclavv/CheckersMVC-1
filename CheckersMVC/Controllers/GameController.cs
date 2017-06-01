@@ -26,6 +26,7 @@ namespace CheckersMVC.Controllers
             Room currentRoom = _roomsManager.GetRoomById(id);
             if (currentRoom == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            currentRoom.MarkUserAsActive(new User() { Name = name });
             var currentGame = currentRoom.Game;
             if (name == currentRoom.Owner.Name)
                 _roomsManager.AddUserToRoom(new User() {Name = name}, id);
@@ -48,11 +49,13 @@ namespace CheckersMVC.Controllers
             Room currentRoom = _roomsManager.GetRoomById(id);
             if (currentRoom == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            currentRoom.MarkUserAsActive(new User() { Name = name });
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
                 GameVM vm = GameVM.From(currentGame, currentRoom.Owner.Name);
                 _roomsManager.AddUserToRoom(new User() {Name = name}, id);
+                currentRoom.TryStartGame();
                 return Refresh(dto);
             }
 
@@ -62,15 +65,11 @@ namespace CheckersMVC.Controllers
         {
             Room currentRoom = _roomsManager.GetRoomById(dto.GameID);
             var name = User.Identity.Name;
-            var playerName1 = currentRoom.Game.Player1.Name;
-            var playerName2 = currentRoom.Game.Player2.Name;
-            if (playerName1 != name && playerName2 != name)
+            if(!currentRoom.IsUserPlayingInRoom(new User() { Name = name }))
                 return HttpNotFound();
             if (currentRoom.Game.GameState == Game.State.Game)
                 return HttpNotFound();
-            currentRoom.Game.InitGame();
-            currentRoom.Game.AddUserToGame(new User(){ Name = playerName1 });
-            currentRoom.Game.AddUserToGame(new User(){ Name = playerName2 });
+            currentRoom.RestartGame();
             return Refresh(dto);
         }
         [HttpPost]
@@ -81,6 +80,7 @@ namespace CheckersMVC.Controllers
             Room currentRoom = _roomsManager.GetRoomById(id);
             if (currentRoom == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            currentRoom.MarkUserAsActive(new User() { Name = name });
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
@@ -99,6 +99,7 @@ namespace CheckersMVC.Controllers
             Room currentRoom = _roomsManager.GetRoomById(moveCoords.GameID);
             if (currentRoom == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            currentRoom.MarkUserAsActive(new User() { Name = name });
             var currentGame = currentRoom.Game;
             lock (currentGame)
             {
@@ -122,9 +123,7 @@ namespace CheckersMVC.Controllers
             if (_roomsManager.RemoveUserFromRoom(new User() {Name = User.Identity.Name}, dto.GameID))
             {
                 var currentRoom = _roomsManager.GetRoomById(dto.GameID);
-                var playerName = currentRoom.Game.Player1.Name ?? currentRoom.Game.Player2.Name;
-                currentRoom.Game.InitGame();
-                currentRoom.Game.AddUserToGame(new User() { Name = playerName });
+                currentRoom.RestartGame();
             }
             return Refresh(dto);
         } 
