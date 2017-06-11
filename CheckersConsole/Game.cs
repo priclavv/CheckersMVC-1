@@ -9,12 +9,13 @@ namespace Checkers
         public int GameID { get; set; }
         public enum State { Game, Gameover, Nogame };
 
-        public State GameState ;
+        public State GameState { get; set;}
         public CheckerBoard Board { get; set; }
         public Player Player1 { get; set; }
         public Player Player2 { get; set; } 
         public Player CurrentPlayer { get; set; }
         protected Player winner;
+        public DateTime StartTime { get; set; }
 
         public Game()
         {
@@ -23,6 +24,7 @@ namespace Checkers
 
         public Player Winner
         {
+            get { return winner; }
             set
             {
                 winner = value;
@@ -99,7 +101,7 @@ namespace Checkers
 
         public void SetGameState()
         {
-            if(Player1.Name == "" || Player2.Name == "")
+            if(Player1.Name == null || Player2.Name == null)
                 GameState = State.Nogame;
             else if (IsGameOver())
                 GameState = State.Gameover;

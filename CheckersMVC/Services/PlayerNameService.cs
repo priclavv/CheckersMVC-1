@@ -15,6 +15,15 @@ namespace CheckersMVC.Services
             g.TryStartGame();
             return isSuccess;
         }
+        public static bool RemoveUserFromGame(this Game g, User user)
+        {
+            if (g.Player1.Name == user.Name)
+                g.Player1.Name = null;
+            if (g.Player2.Name == user.Name)
+                g.Player2.Name = null;
+            g.SetGameState();
+            return true;
+        }
         public static bool SetPlayerName(this Game g, string name)
         {
             if (g.Player1.Name == null)
@@ -34,7 +43,7 @@ namespace CheckersMVC.Services
         {
             if(g.Player1.Name != null && g.Player2.Name != null)
             {
-                g.GameState = Game.State.Game;
+                g.StartTime = DateTime.Now;
                 return true;
             }
             return false;

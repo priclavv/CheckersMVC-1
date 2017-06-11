@@ -42,3 +42,11 @@ textarea {
        border-style: solid;
        border-color: red;
    }
+
+   .playing {
+       font-weight: bold;
+   }
+
+   .margin-top {
+       margin-top: 10px;
+   }

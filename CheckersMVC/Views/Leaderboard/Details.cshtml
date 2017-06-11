@@ -1,0 +1,77 @@
+﻿@using CheckersMVC.Models
+@model CheckersMVC.ViewModels.PlayerStatsVM
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>@(Model.Stats.Name)</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.GamesPlayedCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.GamesPlayedCount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.GamesWonCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.GamesWonCount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.GamesDrawnCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.GamesDrawnCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Stats.GamesLostCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stats.GamesLostCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationDate)
+        </dd>
+
+    </dl>
+</div>
+<table class="table">
+    <tr>
+        <th>Result</th>
+        <th>Opponent</th>
+        <th>Start time</th>
+        <th>Duration time</th>
+    </tr>
+    @{
+        foreach (var gameHistoryVm in Model.PlayedGames)
+        {
+            <tr>
+                <td>@gameHistoryVm.Result</td>
+                <td>
+                    @Html.ActionLink(gameHistoryVm.OpponentName, "Details", new {id = gameHistoryVm.OpponentStatsId})
+                </td>
+                <td>@gameHistoryVm.StartDateTime</td>
+                <td>@gameHistoryVm.GameDurationInMinutes minutes</td>
+            </tr>
+            }
+    }
+</table>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

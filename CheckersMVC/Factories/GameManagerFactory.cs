@@ -7,18 +7,18 @@ using CheckersMVC.Helpers;
 
 namespace CheckersMVC.Factories
 {
-    public class GameManagerFactory
+    public class RoomManagerFactory
     {
-        private static readonly Lazy<GameManagerFactory> lazy =
-            new Lazy<GameManagerFactory>(() => new GameManagerFactory());
+        private static readonly Lazy<RoomManagerFactory> lazy =
+            new Lazy<RoomManagerFactory>(() => new RoomManagerFactory());
 
-        public static GameManagerFactory Instance => lazy.Value;
+        public static RoomManagerFactory Instance => lazy.Value;
 
-        private GameManagerFactory()
+        private RoomManagerFactory()
         {
-            GamesManager = new VolatileGamesManager();
+            RoomManager = new VolatileGamesManager();
         }
 
-        public IGamesManager GamesManager { get; set; }
+        public IRoomManager RoomManager { get; set; }
     }
 }

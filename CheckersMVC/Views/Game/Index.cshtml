@@ -7,33 +7,71 @@
 }
 
 <h2> Board game </h2>
-<table class="board">
-    @{
-        int fieldNum = 0;
-        for (int i = 0; i < 8; i++)
-        {
-            <tr>
-                @{
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if (fieldNum % 2 == 1)
-                        {
-                            <td class="board-field @($"{i}-{j}")" style="background-color: white"></td>
-                        }
-                        else
-                        {
-                            <td class="board-field @($"{i}-{j}") "></td>
-                        }
+<div class="row">
+    <div class="col-md-8">
+        <table class="board">
+            @{
+                int fieldNum = 0;
+                for (int i = 0; i < 8; i++)
+                {
+                    <tr>
+                        @{
+                            for (int j = 0; j < 8; j++)
+                            {
+                                if (fieldNum % 2 == 1)
+                                {
+                                    <td class="board-field @($"{i}-{j}")" style="background-color: white"></td>
+                                }
+                                else
+                                {
+                                    <td class="board-field @($"{i}-{j}") "></td>
+                                }
 
-                        fieldNum++;
-                    }
+                                fieldNum++;
+                            }
+                        }
+                    </tr>
+                    fieldNum++;
                 }
-            </tr>
-            fieldNum++;
-        }
-    }
-</table>
-<h2 id="turn-indicator"></h2>
+            }
+        </table>
+        <h2 id="turn-indicator"></h2>
+    </div>
+    <div class="col-md-4">
+        <div class="row margin-top">
+            <div class="col-md-6">Owner</div>
+            <div class="col-md-6">Player</div>
+        </div>
+        <div class="row margin-top">
+            <div class="col-md-6" id="owner-info">
+                <span class="glyphicon glyphicon-user"></span>
+                <text id="owner-name">Owner</text>
+            </div>
+            <div class="col-md-6" id="player-info">
+                <span class="glyphicon glyphicon-user"></span>
+                <text id="player-name">Player</text>
+            </div>
+        </div>
+        <div class="row margin-top">
+            <div class="col-md-6">
+                <button class="btn btn-block disabled" id="owner-btn">
+                    <span class="glyphicon glyphicon-play"></span>  Become owner
+                </button>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-block disabled" id="player-btn">
+                    <span class="glyphicon glyphicon-play"></span>  Join
+                </button>
+            </div>
+        </div>
+        <div class="row margin-top">
+            <button class="btn btn-block disabled" id="restart-btn">Restart</button>
+        </div>
+        <div class="row margin-top">
+            <button class="btn btn-block" id="quit-btn">Quit</button>
+        </div>
+    </div>
+</div>
 @Scripts.Render("~/bundles/jquery")
 <script>
     var vm = @Html.Raw(JsonConvert.SerializeObject(Model));
@@ -64,13 +102,54 @@
         var message;
         if (gameState === GameStateEnum.NoGame)
             message = 'No game';
-        else if (gameState === GameStateEnum.GameOver)
+        else if (gameState === GameStateEnum.GameOver) {
             message = 'Game over!';
-        else if (isPlayerTurn)
+        }
+        else if (isPlayerTurn) {
             message = 'Your turn';
+        }
         else
             message = 'Enemy\'s turn';
         $('#turn-indicator').text(message);
+        setPlayerNames(vm);
+        setRestartButtonVisibility(vm);
+    }
+
+    function setRestartButtonVisibility(vm) {
+        if (vm.GameState === GameStateEnum.GameOver)
+            $("#restart-btn").removeClass("disabled");
+        else {
+            $("#restart-btn").addClass("disabled")
+        }
+    }
+    function setPlayerNames(vm) {
+        var name1 = "no owner";
+        var name2 = "no player";
+        if (vm.OwnerName !== null) {
+            name1 = vm.OwnerName;
+            $("#owner-btn").addClass("disabled");
+        } else {
+            $("#owner-btn").removeClass("disabled");
+        }
+        var playerName = vm.OwnerName === vm.PlayerName1 ? vm.PlayerName2 : vm.PlayerName1;
+        if (playerName !== null){
+            name2 = playerName;
+            $("#player-btn").addClass("disabled");
+        } else {
+            $("#player-btn").removeClass("disabled");
+        }
+        $("#owner-name").text(name1);
+        $("#player-name").text(name2);
+        if (vm.GameState !== GameStateEnum.Game)
+            return;
+        if (vm.CurrentPlayerName === name1) {
+            $("#player-info").removeClass("playing");
+            $("#owner-info").addClass("playing");
+        } else {
+            $("#owner-info").removeClass("playing");
+            $("#player-info").addClass("playing");
+        }
+
     }
     function getNumber(string) {
         var matches = string.match(/[0-9]-[0-9]/);
@@ -104,15 +183,58 @@
         updateBoard();
     });
 
+    $('#restart-btn').click(function() {
+        var dto = {}
+        dto.GameID = vm.GameID;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Restart")",
+            data: dto,
+            dataType: "json"
+        }).success(function(data) {
+            var newVm = JSON.parse(data);
+            refresh(newVm);
+        });
+    });
+    $('#quit-btn').click(function() {
+        var dto = {}
+        dto.GameID = vm.GameID;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Quit")",
+            data: dto,
+        dataType: "json"
+    }).success(function(data) {
+        var newVm = JSON.parse(data);
+        refresh(newVm);
+    });
+    });
+
+    $('#player-btn').click(function() {
+        var dto = {}
+        dto.GameID = vm.GameID;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Join")",
+            data: dto,
+        dataType: "json"
+    }).success(function(data) {
+        var newVm = JSON.parse(data);
+        refresh(newVm);
+    });
+    });
+
     $('.board-field').click(function() {
         if (!isPlayerTurn || gameState !== GameStateEnum.Game)
             return;
+        var name;
+        var classes;
         if (pieceSelected) {
             
             if (!$(this).children().length > 0) {
                 pieceSelected = false;
-                var classes = $(this).attr('class');
-                var name = getNumber(classes);
+                classes = $(this).attr('class');
+                name = getNumber(classes);
                 moveCoords.toX = parseInt(name[2]);
                 moveCoords.toY = parseInt(name[0]);
                 moveCoords.GameID = vm.GameID;
@@ -131,7 +253,6 @@
                 $(this).removeClass('field-border');
                 pieceSelected = false;
             }
-            // AJAX
             return;
         }   
         if (!$(this).children().length > 0) {
@@ -143,8 +264,8 @@
         } else {
             pieceSelected = true;
             $(this).addClass('field-border');
-            var classes = $(this).attr('class');
-            var name = getNumber(classes);
+            classes = $(this).attr('class');
+            name = getNumber(classes);
             moveCoords.fromX = parseInt(name[2]);
             moveCoords.fromY = parseInt(name[0]);
         }

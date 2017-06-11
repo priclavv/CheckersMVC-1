@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 
 namespace CheckersMVC.Helpers
 {
-    public interface IGamesManager
+    public interface IRoomManager
     {
-        Game GetGameById(int gameID);
-        Game CreateGame(int gameID);
-        bool RemoveGame(int gameID);
+        Room GetRoomById(int roomID);
+        Room[] GetAllRooms();
+        Room CreateRoom(string name, User owner);
+        bool RemoveRoom(int roomID);
+        bool AddUserToRoom(User user, int roomID);
+        bool RemoveUserFromRoom(User user, int roomID);
         bool SaveChanges(Game g);
         
     }
